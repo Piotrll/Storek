@@ -29,9 +29,9 @@ def askForConf():
             configHandle['conn']['ip'] = ip
             configHandle['conn']['port'] = port
             configHandle['conn']['login'] = "default"
-            passwd = '6d7247d6133e96b23352610f50ffff4f0185599a07f167e11b949e703b46a0c912a6f96b969224e7f';
+            passwd = '';
             configHandle['conn']['passwd'] = str(passwd)
-            configHandle['conn']['db'] = "MPKDB"
+            configHandle['conn']['db'] = ""
             configHandle['session']['user'] = "default"
             if os.path.exists(configPath):
                 os.remove(configPath)
