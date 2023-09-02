@@ -22,8 +22,8 @@ def callLogedView():
         selectedItems = listOfStorage.selection()
         dataFromList = listOfStorage.item(selectedItems[0], "values")
 
-        storageStatusInfoLocal = qh.queryMPKDB("select * from storage where id="+str(dataFromList[0])+";")
-        storageFieldsInfoLocal = qh.queryMPKDB("show fields from storage;")
+        storageStatusInfoLocal = qh.queryBase("select * from storage where id="+str(dataFromList[0])+";")
+        storageFieldsInfoLocal = qh.queryBase("show fields from storage;")
         dataInfoNames = []
         actualValueLabels = []
         shownLabels = []
@@ -120,12 +120,12 @@ def callLogedView():
                     i += 1
             params2 = params2[:-1]
             queryAddItems += params2+");"
-            resultAdd = qh.queryMPKDB(queryAddItems)
+            resultAdd = qh.queryBase(queryAddItems)
             if resultAdd == False:
                 resultAddingItem.set("Dodawanie nie udane")
             else:
                 resultAddingItem.set("Dodano pozycje")
-        localStorageFields = qh.queryMPKDB("show fields from storage;")
+        localStorageFields = qh.queryBase("show fields from storage;")
         windowAddItem = tk.Toplevel(width = 300, height = 600)
         windowAddItem.protocol("WM_DELETE_WINDOW", doneAdding)
         frameAdding = tk.LabelFrame(windowAddItem, text = "Dodaj pozycje")
@@ -218,7 +218,7 @@ def callLogedView():
         newLoginEntry.grid(column = 0, row = 1)
         newPasswdEntry.grid(column = 1, row = 1)
 
-        possibleBases = qh.queryMPKDB("SELECT DISTINCT TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'sys','performance_schema') ORDER BY TABLE_SCHEMA;")
+        possibleBases = qh.queryBase("SELECT DISTINCT TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'sys','performance_schema') ORDER BY TABLE_SCHEMA;")
         for base in possibleBases:
             baseForUserList.append(base)
         baseCombo = ttk.Combobox(regFrame, textvariable = baseForUser)
@@ -235,7 +235,7 @@ def callLogedView():
             confLive.Db = selectedBase
             setup.databaseChange(selectedBase)
             selectedBaseQ = "use " + selectedBase +";"
-            qh.queryMPKDB(selectedBaseQ)
+            qh.queryBase(selectedBaseQ)
 
             root.destroy()
             callLogedView()
@@ -292,9 +292,9 @@ def callLogedView():
 
     # Initialize Data from config base ----------------------
     selectedBaseQ = "use " + confLive.Db +";"
-    qh.queryMPKDB(selectedBaseQ)
-    storageStatus = qh.queryMPKDB("select * from storage;")
-    storageFields = qh.queryMPKDB("show fields from storage;")
+    qh.queryBase(selectedBaseQ)
+    storageStatus = qh.queryBase("select * from storage;")
+    storageFields = qh.queryBase("show fields from storage;")
 
     while len(storageFields) > 4:
         storageFields.pop()
@@ -326,7 +326,7 @@ def callLogedView():
     actualBaseVar = tk.StringVar()
     
     actualBase = ttk.Combobox(infoFrameInStorage, textvariable = actualBaseVar)
-    possibleBases = qh.queryMPKDB("SELECT DISTINCT TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'sys','performance_schema') ORDER BY TABLE_SCHEMA;")
+    possibleBases = qh.queryBase("SELECT DISTINCT TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'sys','performance_schema') ORDER BY TABLE_SCHEMA;")
     comboBaseValues = []
     for base in possibleBases:
         comboBaseValues.append(base)

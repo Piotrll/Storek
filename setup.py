@@ -52,9 +52,7 @@ def checkExistance():
         return 0
     else:
         return 3
-
-def loadConfig(isBoot):
-    global confLive
+def emergencyConfig():
     connConfig = {}
     configReader = cp.ConfigParser()
     configReader.read(configPath)
@@ -62,10 +60,25 @@ def loadConfig(isBoot):
     connConfig["Port"] = configReader.get('conn', 'port')
     connConfig["Login"] = configReader.get('conn', 'login')
     connConfig["Passwd"] = configReader.get('conn', 'passwd')
-    connConfig['Db'] = configReader.get('conn', 'db')
-    if 'session' in configReader:
-        connConfig['logedUser'] = configReader.get('session', 'user')
-    confLive = cl.ConfigLoaded(connConfig)
+    confEmerg = cl.ServerQueryConf(connConfig)
+    return confEmerg
+
+def loadConfig(isBoot, *args):
+    global confLive
+    try:
+        connConfig = {}
+        configReader = cp.ConfigParser()
+        configReader.read(configPath)
+        connConfig["Ip"] = configReader.get('conn', 'ip')
+        connConfig["Port"] = configReader.get('conn', 'port')
+        connConfig["Login"] = configReader.get('conn', 'login')
+        connConfig["Passwd"] = configReader.get('conn', 'passwd')
+        connConfig['Db'] = configReader.get('conn', 'db')
+        if 'session' in configReader:
+            connConfig['logedUser'] = configReader.get('session', 'user')
+        confLive = cl.ConfigLoaded(connConfig)
+    except cp.NoOptionError:
+        return False
     if isBoot:
         return True
     else:

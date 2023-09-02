@@ -5,7 +5,13 @@ class ConfigLoaded:
         self.Login = dictionaryConfs["Login"]
         self.Passwd = dictionaryConfs["Passwd"]
         self.Db = dictionaryConfs["Db"]
-        self.logedUser = dictionaryConfs['logedUser']
+        self.logedUser = ''
+class ServerQueryConf:
+    def __init__(self, dictionaryConfs):
+        self.Ip = dictionaryConfs["Ip"]
+        self.Port = dictionaryConfs["Port"]
+        self.Login = dictionaryConfs["Login"]
+        self.Passwd = dictionaryConfs["Passwd"]
 class UserLoggin:
     def __init__(self,loginin, passwdin):
         self.login = loginin

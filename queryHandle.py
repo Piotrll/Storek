@@ -23,7 +23,7 @@ def parameteredQuery(query,params):
         alert.popUpError(e)
         return False
     
-def queryMPKDB(query, *args):
+def queryBase(query, *args):
     #if not ch.pingCheck():
     #   alert.popUpWarn(4)
     defConfig = setup.loadConfig(False)
@@ -45,5 +45,23 @@ def queryMPKDB(query, *args):
     except mc.Error as e:
         alert.popUpError(e)
         return False
-
+def queryServer(query, *args):
+    #if not ch.pingCheck():
+    #   alert.popUpWarn(4)
+    defConfig = setup.emergencyConfig()
+    try:
+        queryListConn = mc.connect(
+            host = defConfig.Ip, 
+            port = defConfig.Port,
+            user = defConfig.Login,
+            password = defConfig.Passwd
+            )
+        cursor = queryListConn.cursor()
+    
+        cursor.execute(query)
         
+        dataCreds = cursor.fetchall()
+        return dataCreds
+    except mc.Error as e:
+        alert.popUpError(e)
+        return False

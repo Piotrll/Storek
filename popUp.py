@@ -79,6 +79,9 @@ def popUpWarn(case):
         case 11:
             warn = "Dodawanie użytkownika nieudane"
             warnButton = tk.Button(rootWarn, text = "OK", command = closeWarn)
+        case 12:
+            warn = "Wybrany serwer nie posiada stworzonych baz danych."
+            warnButton = tk.Button(rootWarn, text = "OK", command = closeNoExit)
         case _:
             warn = "That's it am out: Fatal Error"
     warnLabel = tk.Label(rootWarn, text = warn)
