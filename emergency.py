@@ -12,8 +12,8 @@ def askForConf():
         sys.exit()
     def saveGivenConf():
         global configPath
-        configPath = os.path.join(sys._MEIPASS, 'config.ini')
-        #configPath = 'config.ini'
+        #configPath = os.path.join(sys._MEIPASS, 'config.ini')
+        configPath = 'config.ini'
         ip = ipEntered.get()
         port = portEntered.get()
         ipPatern = r"^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
