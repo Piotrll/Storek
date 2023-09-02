@@ -24,9 +24,10 @@ def askForConf():
             configHandle[firstBase.get()]['storageTable'] = storage
             with open(configPath, 'w') as configHandlerWrite:
                 configHandle.write(configHandlerWrite)
+            rootFinalConf.destroy()
             return
         def configureBase():
-            global tablesStorage, tablesUsers, failCause
+            global tablesStorage, tablesUsers, failCause, rootFinalConf
             rootFinalConf = tk.Tk()
             rootFinalConf.title("Storek Konfiguracja")
             rootFinalConf.protocol("WM_DELETE_WINDOW", closedWindow)
@@ -54,6 +55,7 @@ def askForConf():
             saveBaseConfButton.grid(column = 0, row = 2, columnspan = 2)
             failLabel.grid(column = 0,row = 3, columnspan = 2)
             rootFinalConf.mainloop()
+            return
         def saveBase():
             configHandle = cp.ConfigParser()
             configHandle.read(configPath)
@@ -61,7 +63,8 @@ def askForConf():
             with open(configPath, 'w') as configHandlerWrite:
                 configHandle.write(configHandlerWrite)
             rootDbConf.destroy()
-            configureBase()    
+            configureBase()   
+            return 
         rootDbConf = tk.Tk()
         rootDbConf.title("Storek Konfiguracja")
         rootDbConf.protocol("WM_DELETE_WINDOW", closedWindow)
@@ -87,6 +90,7 @@ def askForConf():
         basesToChoose.grid(column = 0, row = 1)
         proceedButton.grid(column = 0, row = 2)
         rootDbConf.mainloop()
+        return
     def closedWindow():
         sys.exit()
     def connectionConf():
@@ -118,6 +122,7 @@ def askForConf():
                 configHandle.write(configHandlerWrite)
             rootAskForConf.destroy()
             dbConfig()
+            return
     alert.popUpWarn(10)
     rootAskForConf = tk.Tk()
     rootAskForConf.title("Storek Konfiguracja")
@@ -131,11 +136,11 @@ def askForConf():
     ipLabel = tk.Label(rootAskForConf, text = "Adres serwera")
     portLabel = tk.Label(rootAskForConf, text = "Port kominikacji")
     masterLoginLabel = tk.Label(rootAskForConf, text = "Login SQL")
-    masterPasswdLabel = tk.Label(rootAskForConf, text = "Hsało SQL")
+    masterPasswdLabel = tk.Label(rootAskForConf, text = "Hasło SQL")
     ipEntry = tk.Entry(rootAskForConf, textvariable = ipEntered)
     portEntry = tk.Entry(rootAskForConf, textvariable = portEntered)
     masterLoginEntry = tk.Entry(rootAskForConf, textvariable = masterLoginEntered)
-    masterPasswdEntry = tk.Entry(rootAskForConf, textvariable = masterPasswdEntered)
+    masterPasswdEntry = tk.Entry(rootAskForConf, textvariable = masterPasswdEntered, show = '*')
     failLabel = tk.Label(rootAskForConf,textvariable = failText)
     exitButton = tk.Button(rootAskForConf, text = "Wyjście", command = sys.exit)
     saveButton = tk.Button(rootAskForConf, text = "Zapisz", command = connectionConf)

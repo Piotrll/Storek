@@ -21,3 +21,7 @@ class Base:
     def __init__(self):
         self.columns = []
         self.data = []
+class BaseConf:
+    def __init__(self, storage,users):
+        self.Users = users
+        self.Storage = storage

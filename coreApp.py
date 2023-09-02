@@ -22,8 +22,8 @@ def callLogedView():
         selectedItems = listOfStorage.selection()
         dataFromList = listOfStorage.item(selectedItems[0], "values")
 
-        storageStatusInfoLocal = qh.queryBase("select * from storage where id="+str(dataFromList[0])+";")
-        storageFieldsInfoLocal = qh.queryBase("show fields from storage;")
+        storageStatusInfoLocal = qh.queryBase("select * from "+confBase.Storage+" where id="+str(dataFromList[0])+";")
+        storageFieldsInfoLocal = qh.queryBase("show fields from "+confBase.Storage+";")
         dataInfoNames = []
         actualValueLabels = []
         shownLabels = []
@@ -96,7 +96,7 @@ def callLogedView():
                     i += 1
 
             params1 = params1[:-1]
-            queryAddItems = "INSERT INTO storage ("+params1+") VALUES ("
+            queryAddItems = "INSERT INTO "+confBase.Storage++" ("+params1+") VALUES ("
             i = 0
             for val in valuesVar:
 
@@ -125,7 +125,7 @@ def callLogedView():
                 resultAddingItem.set("Dodawanie nie udane")
             else:
                 resultAddingItem.set("Dodano pozycje")
-        localStorageFields = qh.queryBase("show fields from storage;")
+        localStorageFields = qh.queryBase("show fields from "+confBase.Storage+";")
         windowAddItem = tk.Toplevel(width = 300, height = 600)
         windowAddItem.protocol("WM_DELETE_WINDOW", doneAdding)
         frameAdding = tk.LabelFrame(windowAddItem, text = "Dodaj pozycje")
@@ -172,7 +172,7 @@ def callLogedView():
             confirm = tk.messagebox.askyesno("Potwierdzenie", f"Jesteś pewny że chcesz usunąć {youSureMes}'?")
         if confirm:
             params = (valOfItem,)
-            res = qh.parameteredQuery("DELETE FROM storage WHERE id = %s;", params)
+            res = qh.parameteredQuery("DELETE FROM "+confBase.Storage+" WHERE id = %s;", params)
             if not res:
                 return
             else:
@@ -243,6 +243,7 @@ def callLogedView():
 
     #load config---------------------------------------------
     confLive = setup.loadConfig(False)    
+    confBase = setup.loadConfigForBase()
     #--------------------------------------------------------
 
     #root window --------------------------------------------
@@ -293,8 +294,8 @@ def callLogedView():
     # Initialize Data from config base ----------------------
     selectedBaseQ = "use " + confLive.Db +";"
     qh.queryBase(selectedBaseQ)
-    storageStatus = qh.queryBase("select * from storage;")
-    storageFields = qh.queryBase("show fields from storage;")
+    storageStatus = qh.queryBase("select * from "+confBase.Storage+";")
+    storageFields = qh.queryBase("show fields from "+confBase.Storage+";")
 
     while len(storageFields) > 4:
         storageFields.pop()

@@ -62,7 +62,19 @@ def emergencyConfig():
     connConfig["Passwd"] = configReader.get('conn', 'passwd')
     confEmerg = cl.ServerQueryConf(connConfig)
     return confEmerg
-
+def loadConfigForBase():
+    global confBase
+    try:
+        connConfigNow = loadConfig(False)
+        baseConfig = {}
+        configReader = cp.ConfigParser()
+        configReader.read(configPath)
+        baseConfig["userTable"] = configReader.get(connConfigNow.Db, 'usertable')
+        baseConfig["storageTable"] = configReader.get(connConfigNow.Db, 'storagetable')
+        confBase = cl.BaseConf(baseConfig['storageTable'],baseConfig['userTable'])
+    except cp.NoOptionError:
+        return False
+    return confBase    
 def loadConfig(isBoot, *args):
     global confLive
     try:
