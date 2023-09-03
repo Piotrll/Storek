@@ -38,6 +38,7 @@ def popUpWarn(case):
         exit()
     def closeNoExit():
         rootWarn.destroy()
+        return
     rootWarn = tk.Tk()
     rootWarn.geometry("400x100")
     rootWarn.title("Storek")
@@ -79,6 +80,24 @@ def popUpWarn(case):
         case 11:
             warn = "Dodawanie użytkownika nieudane"
             warnButton = tk.Button(rootWarn, text = "OK", command = closeWarn)
+        case 12:
+            warn = "Wybrany serwer nie posiada stworzonych baz danych."
+            warnButton = tk.Button(rootWarn, text = "OK", command = closeNoExit)
+        case 13:
+            warn = "Błąd konfiguracji wybranej bazy"
+            warnButton = tk.Button(rootWarn, text = "OK", command = closeNoExit)
+        case 14:
+            warn = "Wystąpił błąd podczass zmiany bazy"
+            warnButton = tk.Button(rootWarn, text = "OK", command = closeNoExit)
+        case 15:
+            warn = "Baza nie posiada stworzonych tabel"
+            warnButton = tk.Button(rootWarn, text = "OK", command = closeNoExit)
+        case 16:
+            warn = "Plik konfiguracyjny uszkodzony/niekompletny, uruchom program ponownie"
+            warnButton = tk.Button(rootWarn, text = "OK", command = closeWarn)
+        case 17:
+            warn = "Utracono połączenie z serwerem"
+            warnButton = tk.Button(rootWarn, text = "OK", command = closeWarn)
         case _:
             warn = "That's it am out: Fatal Error"
     warnLabel = tk.Label(rootWarn, text = warn)
@@ -88,4 +107,5 @@ def popUpWarn(case):
     warnLabel.pack(pady = 10)
     warnButton.pack(pady = 10)
     rootWarn.mainloop()
+    return
 

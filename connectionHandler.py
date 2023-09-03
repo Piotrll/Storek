@@ -3,15 +3,28 @@ import platform
 import popUp as alert
 import mysql.connector
 import credHandle as ch
+import threading as th
+import time
 def connectionInit(connSets):
-    pingRes = pingCheck()
+    pingRes = pingCheck("3", "1.1.1.1")
     if pingRes != 0:
         return False
     print("Internet good")
     if not estConnection(connSets):
         return False
     return True
-
+def maintainConnection(ip):
+    failCount = 0
+    while (True):
+        time.sleep(2)
+        if pingCheck("1",ip) != 0:
+            failCount += 1
+        else:
+            failCount = 0
+        if failCount > 3:
+            alert.popUpWarn(17)
+            break
+            
 def estConnection(creds):
     try:
         connectionInstance = mysql.connector.connect(host = creds.Ip, port = creds.Port,db = creds.Db, user = creds.Login, password = creds.Passwd)
@@ -24,13 +37,14 @@ def estConnection(creds):
             exit()
     connectionInstance.close()
     print("Connection good")
+    connection = th.Thread(target = maintainConnection, args = (creds.Ip,))
+    connection.start()
     return True
     #Here call main window
-def pingCheck():
+def pingCheck(howMany, who):
     if platform.system().lower() == "windows":
         param = "-n"
     else:
         param = "-c"
-    host = "8.8.8.8"
-    pingGoogle = ["ping", param, "3", host]
+    pingGoogle = ["ping", param, howMany, who]
     return subprocess.call(pingGoogle)

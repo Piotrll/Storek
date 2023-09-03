@@ -1,4 +1,4 @@
-
+import sys
 import popUp as alert
 import classLib as cl
 import setup
@@ -7,6 +7,7 @@ from tkinter import ttk
 from tkinter import messagebox
 import queryHandle as qh
 import credHandle as ch
+import emergency as emerg
 import datetime
 
 def callAppCore():
@@ -22,8 +23,8 @@ def callLogedView():
         selectedItems = listOfStorage.selection()
         dataFromList = listOfStorage.item(selectedItems[0], "values")
 
-        storageStatusInfoLocal = qh.queryMPKDB("select * from storage where id="+str(dataFromList[0])+";")
-        storageFieldsInfoLocal = qh.queryMPKDB("show fields from storage;")
+        storageStatusInfoLocal = qh.queryBase("select * from "+confBase.Storage+" where id="+str(dataFromList[0])+";")
+        storageFieldsInfoLocal = qh.queryBase("show fields from "+confBase.Storage+";")
         dataInfoNames = []
         actualValueLabels = []
         shownLabels = []
@@ -96,7 +97,7 @@ def callLogedView():
                     i += 1
 
             params1 = params1[:-1]
-            queryAddItems = "INSERT INTO storage ("+params1+") VALUES ("
+            queryAddItems = "INSERT INTO "+confBase.Storage++" ("+params1+") VALUES ("
             i = 0
             for val in valuesVar:
 
@@ -120,12 +121,12 @@ def callLogedView():
                     i += 1
             params2 = params2[:-1]
             queryAddItems += params2+");"
-            resultAdd = qh.queryMPKDB(queryAddItems)
+            resultAdd = qh.queryBase(queryAddItems)
             if resultAdd == False:
                 resultAddingItem.set("Dodawanie nie udane")
             else:
                 resultAddingItem.set("Dodano pozycje")
-        localStorageFields = qh.queryMPKDB("show fields from storage;")
+        localStorageFields = qh.queryBase("show fields from "+confBase.Storage+";")
         windowAddItem = tk.Toplevel(width = 300, height = 600)
         windowAddItem.protocol("WM_DELETE_WINDOW", doneAdding)
         frameAdding = tk.LabelFrame(windowAddItem, text = "Dodaj pozycje")
@@ -172,7 +173,7 @@ def callLogedView():
             confirm = tk.messagebox.askyesno("Potwierdzenie", f"Jesteś pewny że chcesz usunąć {youSureMes}'?")
         if confirm:
             params = (valOfItem,)
-            res = qh.parameteredQuery("DELETE FROM storage WHERE id = %s;", params)
+            res = qh.parameteredQuery("DELETE FROM "+confBase.Storage+" WHERE id = %s;", params)
             if not res:
                 return
             else:
@@ -218,7 +219,7 @@ def callLogedView():
         newLoginEntry.grid(column = 0, row = 1)
         newPasswdEntry.grid(column = 1, row = 1)
 
-        possibleBases = qh.queryMPKDB("SELECT DISTINCT TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'sys','performance_schema') ORDER BY TABLE_SCHEMA;")
+        possibleBases = qh.queryBase("SELECT DISTINCT TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'sys','performance_schema') ORDER BY TABLE_SCHEMA;")
         for base in possibleBases:
             baseForUserList.append(base)
         baseCombo = ttk.Combobox(regFrame, textvariable = baseForUser)
@@ -226,29 +227,42 @@ def callLogedView():
         baseCombo.grid(column = 3, row = 1)
         buttonAdd = tk.Button(regFrame, text = "Dodaj", command = callAdding)
         buttonAdd.grid(column = 0, row = 3)
+        return True
 
         
 
     def changeBaseEvent(event):
         selectedBase = event.widget.get()
-        if selectedBase != confLive.Db:
+        root.destroy()        
+        if setup.checkDatabaseConf(selectedBase) == 1:
+            #alert.popUpWarn(13)
+            if emerg.askForNewBase(selectedBase) == 1:
+                alert.popUpWarn(14)
+                callLogedView()
+            else:
+                confLive.Db = selectedBase
+                setup.databaseChange(selectedBase)
+                selectedBaseQ = "use " + selectedBase
+                qh.queryBase(selectedBaseQ)
+                callLogedView()
+        elif selectedBase != confLive.Db:
             confLive.Db = selectedBase
             setup.databaseChange(selectedBase)
-            selectedBaseQ = "use " + selectedBase +";"
-            qh.queryMPKDB(selectedBaseQ)
-
-            root.destroy()
-            callLogedView()
+            selectedBaseQ = "use " + selectedBase
+            qh.queryBase(selectedBaseQ)
+        callLogedView()
     #def stuffSelect(event, label):
-
+    global root
     #load config---------------------------------------------
     confLive = setup.loadConfig(False)    
+    confBase = setup.loadConfigForBase()
     #--------------------------------------------------------
 
     #root window --------------------------------------------
     root = tk.Tk()
     root.title("Storek")
     root.geometry("1280x340")
+    root.protocol("WM_DELETE_WINDOW", sys.exit)
     #root.bind("<Button-1>", hide_context_menu)
     #--------------------------------------------------------
 
@@ -264,7 +278,7 @@ def callLogedView():
     settingsFrame = ttk.Frame(mainNotebook)
     settingsFrame.grid(column = 0, row = 0)
     if not addRegister(confLive.logedUser):
-        pass
+        print("Not admin user")
     #--------------------------------------------------------
 
     #Info frame----------------------------------------------
@@ -292,9 +306,9 @@ def callLogedView():
 
     # Initialize Data from config base ----------------------
     selectedBaseQ = "use " + confLive.Db +";"
-    qh.queryMPKDB(selectedBaseQ)
-    storageStatus = qh.queryMPKDB("select * from storage;")
-    storageFields = qh.queryMPKDB("show fields from storage;")
+    qh.queryBase(selectedBaseQ)
+    storageStatus = qh.queryBase("select * from "+confBase.Storage+";")
+    storageFields = qh.queryBase("show fields from "+confBase.Storage+";")
 
     while len(storageFields) > 4:
         storageFields.pop()
@@ -326,7 +340,7 @@ def callLogedView():
     actualBaseVar = tk.StringVar()
     
     actualBase = ttk.Combobox(infoFrameInStorage, textvariable = actualBaseVar)
-    possibleBases = qh.queryMPKDB("SELECT DISTINCT TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'sys','performance_schema') ORDER BY TABLE_SCHEMA;")
+    possibleBases = qh.queryBase("SELECT DISTINCT TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'sys','performance_schema') ORDER BY TABLE_SCHEMA;")
     comboBaseValues = []
     for base in possibleBases:
         comboBaseValues.append(base)

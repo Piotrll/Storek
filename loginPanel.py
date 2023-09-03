@@ -19,7 +19,7 @@ def loginPanelInit(defConfig):
         if resultOfCompare == 5:
             failCause.set('Błąd logowania')
         elif resultOfCompare == 0:
-            setup.loggedUser(userActive.login)
+            setup.loggedUser(userActive)
             failCause.set('Logowanie udane')
             print("git")
             rootLogin.destroy()
@@ -44,7 +44,7 @@ def loginPanelInit(defConfig):
     loginButton = tk.Button(inputFrame, text = "Zaloguj", command = loginMe)
 
     possibleBases = ttk.Combobox(inputFrame, textvariable = baseToGo)
-    possibleBasesVar = qh.queryMPKDB("SELECT DISTINCT TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'sys','performance_schema') ORDER BY TABLE_SCHEMA;")
+    possibleBasesVar = qh.queryBase("SELECT DISTINCT TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'sys','performance_schema') ORDER BY TABLE_SCHEMA;")
     comboBaseValues = []
     for base in possibleBasesVar:
         comboBaseValues.append(base)

@@ -7,13 +7,24 @@ import classLib as cl
 import emergency as emerg
 import loginPanel as lp
 
+def checkDatabaseConf(selectedBase):
+    
+    configHandle = cp.ConfigParser()
+    configHandle.read(configPath)
+    if selectedBase not in configHandle:
+        return 1
+    else:
+        return 0
+    
+
 def loggedUser(user):
 
     configHandle = cp.ConfigParser()
     configHandle.read(configPath)
     if 'session' not in configHandle:
         configHandle.add_section('session')
-    configHandle.set('session', 'user', user)
+    configHandle.set('session', 'user', user.login)
+    configHandle.set('conn', 'db', user.db)
     with open(configPath, 'w') as configHandlerWrite:
         configHandle.write(configHandlerWrite)
 
@@ -52,9 +63,7 @@ def checkExistance():
         return 0
     else:
         return 3
-
-def loadConfig(isBoot):
-    global confLive
+def emergencyConfig():
     connConfig = {}
     configReader = cp.ConfigParser()
     configReader.read(configPath)
@@ -62,10 +71,39 @@ def loadConfig(isBoot):
     connConfig["Port"] = configReader.get('conn', 'port')
     connConfig["Login"] = configReader.get('conn', 'login')
     connConfig["Passwd"] = configReader.get('conn', 'passwd')
-    connConfig['Db'] = configReader.get('conn', 'db')
-    if 'session' in configReader:
-        connConfig['logedUser'] = configReader.get('session', 'user')
-    confLive = cl.ConfigLoaded(connConfig)
+    confEmerg = cl.ServerQueryConf(connConfig)
+    return confEmerg
+def loadConfigForBase():
+    global confBase
+    try:
+        connConfigNow = loadConfig(False)
+        baseConfig = {}
+        configReader = cp.ConfigParser()
+        configReader.read(configPath)
+        baseConfig["userTable"] = configReader.get(connConfigNow.Db, 'usertable')
+        baseConfig["storageTable"] = configReader.get(connConfigNow.Db, 'storagetable')
+        confBase = cl.BaseConf(baseConfig['storageTable'],baseConfig['userTable'])
+    except (cp.NoOptionError, cp.NoSectionError):
+        return False
+    return confBase    
+def loadConfig(isBoot, *args):
+    global confLive
+    try:
+        connConfig = {}
+        configReader = cp.ConfigParser()
+        configReader.read(configPath)
+        connConfig["Ip"] = configReader.get('conn', 'ip')
+        connConfig["Port"] = configReader.get('conn', 'port')
+        connConfig["Login"] = configReader.get('conn', 'login')
+        connConfig["Passwd"] = configReader.get('conn', 'passwd')
+        connConfig['Db'] = configReader.get('conn', 'db')
+        if 'session' in configReader:
+            connConfig['logedUser'] = configReader.get('session', 'user')
+            confLive = cl.ConfigLoaded(connConfig,True)
+        else:
+            confLive = cl.ConfigLoaded(connConfig)
+    except cp.NoOptionError:
+        return False
     if isBoot:
         return True
     else:
