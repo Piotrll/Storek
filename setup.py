@@ -6,7 +6,16 @@ import connectionHandler as ch
 import classLib as cl
 import emergency as emerg
 import loginPanel as lp
-
+def checkConfig(db):
+    try:
+        configHandle = cp.ConfigParser()
+        configHandle.read(configPath)
+        tables = {}
+        tables['usertable'] = configHandle.get(db,'usertable')
+        tables['storagetable'] = configHandle.get(db,'storagetable')
+        return tables
+    except (cp.NoSectionError, cp.NoOptionError):
+        alert.popUpWarn(13)
 def checkDatabaseConf(selectedBase):
     
     configHandle = cp.ConfigParser()
@@ -24,6 +33,7 @@ def loggedUser(user):
     if 'session' not in configHandle:
         configHandle.add_section('session')
     configHandle.set('session', 'user', user.login)
+    configHandle.set('session', 'permissioncode', str(user.perms))
     configHandle.set('conn', 'db', user.db)
     with open(configPath, 'w') as configHandlerWrite:
         configHandle.write(configHandlerWrite)
@@ -99,6 +109,7 @@ def loadConfig(isBoot, *args):
         connConfig['Db'] = configReader.get('conn', 'db')
         if 'session' in configReader:
             connConfig['logedUser'] = configReader.get('session', 'user')
+            connConfig['permissionCode'] = int(configReader.get('session', 'permissionCode'))
             confLive = cl.ConfigLoaded(connConfig,True)
         else:
             confLive = cl.ConfigLoaded(connConfig)

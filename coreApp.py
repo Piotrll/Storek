@@ -9,12 +9,15 @@ import queryHandle as qh
 import credHandle as ch
 import emergency as emerg
 import datetime
-
+import permissionHandler as ph
+import threadHandle as thh
 def callAppCore():
     setup.callSettings()
     print("Settings done")
     return 0
 def callLogedView():
+    def closeApp():
+        thh.threadManager(True)
     def showSelectInfo(e):
         try:
             itemInfo.destroy()
@@ -184,9 +187,9 @@ def callLogedView():
         else:
             return
             
-    def addRegister(user):
+    def addRegister(confLive):
         def callAdding():
-            newUser = cl.UserLoggin(newLoginVar.get(),newPasswdVar.get())
+            newUser = cl.UserLoggin(newLoginVar.get(),newPasswdVar.get(),newPermVar.get())
             newUser.db = baseForUser.get()
             if newUser.db != confLive.Db:
                 setup.databaseChange(newUser.db)
@@ -194,7 +197,7 @@ def callLogedView():
                 alert.popUpWarn(11)
             else:
                 resultAddingUserVar.set("Użytkownik dodany")
-        if user != 'default':
+        if not ph.addingPermCheck(confLive.permissionCode):
             return False
         regFrame = tk.LabelFrame(settingsFrame, text = "Dodaj użytkownika")
         regFrame.grid(column = 0, row = 0)
@@ -205,19 +208,24 @@ def callLogedView():
         passwdLabel.grid(column = 1, row = 0)
         dbLabel = tk.Label(regFrame, text = "Wybierz baze")
         dbLabel.grid(column = 2, row = 0)
+        permLabel = tk.Label(regFrame, text = "Kod uprawnień")
+        permLabel.grid(column = 0, row = 2)
 
         resultAddingUserVar = tk.StringVar()
         resultAddingUser = tk.Label(regFrame, textvariable = resultAddingUserVar)
-        resultAddingUser.grid(column = 0, row = 2, columnspan= 3)
+        resultAddingUser.grid(column = 0, row = 4, columnspan= 3)
 
         newLoginVar = tk.StringVar()
         newPasswdVar = tk.StringVar()
         baseForUser = tk.StringVar()
+        newPermVar = tk.IntVar()
         baseForUserList = []
         newLoginEntry = tk.Entry(regFrame, textvariable = newLoginVar)
         newPasswdEntry = tk.Entry(regFrame, textvariable = newPasswdVar, show = "*")
+        permEntry = tk.Entry(regFrame, textvariable = newPermVar)
         newLoginEntry.grid(column = 0, row = 1)
         newPasswdEntry.grid(column = 1, row = 1)
+        permEntry.grid(column = 0, row = 3)
 
         possibleBases = qh.queryBase("SELECT DISTINCT TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'sys','performance_schema') ORDER BY TABLE_SCHEMA;")
         for base in possibleBases:
@@ -226,7 +234,7 @@ def callLogedView():
         baseCombo['values'] = baseForUserList
         baseCombo.grid(column = 3, row = 1)
         buttonAdd = tk.Button(regFrame, text = "Dodaj", command = callAdding)
-        buttonAdd.grid(column = 0, row = 3)
+        buttonAdd.grid(column = 0, row = 5)
         return True
 
         
@@ -256,13 +264,15 @@ def callLogedView():
     #load config---------------------------------------------
     confLive = setup.loadConfig(False)    
     confBase = setup.loadConfigForBase()
+    if confBase == False:
+        return False
     #--------------------------------------------------------
 
     #root window --------------------------------------------
     root = tk.Tk()
     root.title("Storek")
     root.geometry("1280x340")
-    root.protocol("WM_DELETE_WINDOW", sys.exit)
+    root.protocol("WM_DELETE_WINDOW", closeApp)
     #root.bind("<Button-1>", hide_context_menu)
     #--------------------------------------------------------
 
@@ -277,8 +287,9 @@ def callLogedView():
     #Settings Frame------------------------------------------
     settingsFrame = ttk.Frame(mainNotebook)
     settingsFrame.grid(column = 0, row = 0)
-    if not addRegister(confLive.logedUser):
+    if not addRegister(confLive):
         print("Not admin user")
+    
     #--------------------------------------------------------
 
     #Info frame----------------------------------------------

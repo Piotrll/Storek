@@ -5,6 +5,7 @@ import sys
 import time
 import psutil
 import popUp as alert
+import threadHandle as thh
 
 
 def init():
@@ -18,7 +19,9 @@ def init():
         if errorCode != 0:
             alert.popUpWarn(errorCode)
             sys.exit()
-        core.callLogedView()
+        thh.threadManager()
+        if core.callLogedView() == False:
+            alert.popUpWarn(13)
 
 def checkForOtherInstances():
     i = 0 
@@ -37,6 +40,7 @@ def checkForOtherInstances():
         return True
     else:
         return False
+    
 init()
 
 """

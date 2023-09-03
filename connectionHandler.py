@@ -13,17 +13,29 @@ def connectionInit(connSets):
     if not estConnection(connSets):
         return False
     return True
-def maintainConnection(ip):
-    failCount = 0
-    while (True):
-        time.sleep(2)
-        if pingCheck("1",ip) != 0:
-            failCount += 1
-        else:
-            failCount = 0
-        if failCount > 3:
-            alert.popUpWarn(17)
-            break
+def connThreads(confLive, *args):
+    def maintainConnection(ip,*args):
+        
+        failCount = 0
+        while (stop != 1):
+            time.sleep(2)
+            if pingCheck("1",ip) != 0:
+                failCount += 1
+            else:
+                failCount = 0
+            if failCount > 3:
+                alert.popUpWarn(17)
+                break
+    global stop
+    if args and args[0] == True:
+        stop = 0
+        connection = th.Thread(target = maintainConnection, args = (confLive.Ip,))
+        connection.start()
+        return
+    elif args and args[0] == False:
+        stop = 1
+        return
+    
             
 def estConnection(creds):
     try:
@@ -37,8 +49,6 @@ def estConnection(creds):
             exit()
     connectionInstance.close()
     print("Connection good")
-    connection = th.Thread(target = maintainConnection, args = (creds.Ip,))
-    connection.start()
     return True
     #Here call main window
 def pingCheck(howMany, who):

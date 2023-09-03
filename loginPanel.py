@@ -13,11 +13,21 @@ def loginPanelInit(defConfig):
         sys.exit()
     def loginMe():
         global resultOfCompare
+
+
         userActive = cl.UserLoggin(loginEntered.get(),passwordEntered.get())
         userActive.db = baseToGo.get()
+        tables = setup.checkConfig(userActive.db)
+        permCheckList = qh.queryBase('select * from '+tables['usertable']+';')
+        for perm in permCheckList:
+            if perm[1] == userActive.login:
+                userActive.perms = perm[3]
+                break
         resultOfCompare = ch.compareCreds(userActive,defConfig)
         if resultOfCompare == 5:
             failCause.set('Błąd logowania')
+        elif resultOfCompare == 4:
+            failCause.set('Brak uprawnień')
         elif resultOfCompare == 0:
             setup.loggedUser(userActive)
             failCause.set('Logowanie udane')

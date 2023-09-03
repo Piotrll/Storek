@@ -18,7 +18,10 @@ def compareCreds(toCompare, defConfig):
     credsExisting = qh.queryBase("select * from "+toCompare.db+"."+confBase.Users+";")
     for row in credsExisting:
         if (row[1] == toCompare.login) and (bc.checkpw(toCompare.passwd.encode('utf-8'), row[2].encode('utf-8'))):
-            return 0
+            if row[3] == 0:
+                return 4
+            else:
+                return 0
     return 5 
 
 def hashPassword(passLoad):
@@ -30,8 +33,8 @@ def hashPassword(passLoad):
 def addUser(newUser):
 
     newUser.passwd = hashPassword(newUser.passwd)
-    queryAddUser = " INSERT INTO "+newUser.db+"."+confBase.Users+"(login, passwd) VALUES (%s, %s);"
-    query_params = (newUser.login, newUser.passwd)
+    queryAddUser = " INSERT INTO "+newUser.db+"."+confBase.Users+" () VALUES (%s, %s, %s);"
+    query_params = (newUser.login, newUser.passwd, newUser.perms)
     res = qh.parameteredQuery(queryAddUser,query_params)
     
     if res != False:
