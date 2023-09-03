@@ -90,8 +90,11 @@ def popUpWarn(case):
             warn = "Wystąpił błąd podczass zmiany bazy"
             warnButton = tk.Button(rootWarn, text = "OK", command = closeNoExit)
         case 15:
-            wanr = "Baza nie posiada stworzonych tabel"
+            warn = "Baza nie posiada stworzonych tabel"
             warnButton = tk.Button(rootWarn, text = "OK", command = closeNoExit)
+        case 16:
+            warn = "Plik konfiguracyjny uszkodzony/niekompletny, uruchom program ponownie"
+            warnButton = tk.Button(rootWarn, text = "OK", command = closeWarn)
         case _:
             warn = "That's it am out: Fatal Error"
     warnLabel = tk.Label(rootWarn, text = warn)
@@ -101,4 +104,5 @@ def popUpWarn(case):
     warnLabel.pack(pady = 10)
     warnButton.pack(pady = 10)
     rootWarn.mainloop()
+    return
 

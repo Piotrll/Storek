@@ -83,7 +83,7 @@ def loadConfigForBase():
         baseConfig["userTable"] = configReader.get(connConfigNow.Db, 'usertable')
         baseConfig["storageTable"] = configReader.get(connConfigNow.Db, 'storagetable')
         confBase = cl.BaseConf(baseConfig['storageTable'],baseConfig['userTable'])
-    except cp.NoOptionError:
+    except (cp.NoOptionError, cp.NoSectionError):
         return False
     return confBase    
 def loadConfig(isBoot, *args):
