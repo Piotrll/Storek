@@ -1,11 +1,13 @@
 class ConfigLoaded:
-    def __init__(self, dictionaryConfs):
+    def __init__(self, dictionaryConfs, *args):
         self.Ip = dictionaryConfs["Ip"]
         self.Port = dictionaryConfs["Port"]
         self.Login = dictionaryConfs["Login"]
         self.Passwd = dictionaryConfs["Passwd"]
         self.Db = dictionaryConfs["Db"]
         self.logedUser = ''
+        if args[0]:
+            self.logedUser = dictionaryConfs["logedUser"]
 class ServerQueryConf:
     def __init__(self, dictionaryConfs):
         self.Ip = dictionaryConfs["Ip"]

@@ -7,13 +7,24 @@ import classLib as cl
 import emergency as emerg
 import loginPanel as lp
 
+def checkDatabaseConf(selectedBase):
+    
+    configHandle = cp.ConfigParser()
+    configHandle.read(configPath)
+    if selectedBase not in configHandle:
+        return 1
+    else:
+        return 0
+    
+
 def loggedUser(user):
 
     configHandle = cp.ConfigParser()
     configHandle.read(configPath)
     if 'session' not in configHandle:
         configHandle.add_section('session')
-    configHandle.set('session', 'user', user)
+    configHandle.set('session', 'user', user.login)
+    configHandle.set('conn', 'db', user.db)
     with open(configPath, 'w') as configHandlerWrite:
         configHandle.write(configHandlerWrite)
 
@@ -88,7 +99,9 @@ def loadConfig(isBoot, *args):
         connConfig['Db'] = configReader.get('conn', 'db')
         if 'session' in configReader:
             connConfig['logedUser'] = configReader.get('session', 'user')
-        confLive = cl.ConfigLoaded(connConfig)
+            confLive = cl.ConfigLoaded(connConfig,True)
+        else:
+            confLive = cl.ConfigLoaded(connConfig)
     except cp.NoOptionError:
         return False
     if isBoot:

@@ -8,6 +8,56 @@ import credHandle as ch
 import queryHandle as qh
 import popUp as alert
 
+def askForNewBase(selectedBase):
+    global configPath
+    configPath ='config.ini'
+    def saveNewBase():
+        try:
+            users = tablesUsers.get()
+            storage = tablesStorage.get()
+            
+            configHandle = cp.ConfigParser()
+            configHandle.read(configPath)
+            configHandle.add_section(selectedBase)
+            configHandle[selectedBase]['userTable'] = users
+            configHandle[selectedBase]['storageTable'] = storage
+            with open(configPath, 'w') as configHandlerWrite:
+                configHandle.write(configHandlerWrite)
+        except cp.NoOptionError:
+            alert.popUpWarn(13)
+        finally:
+            newBase.destroy()
+            return
+    global newBaseTableForStorage,newBaseTableForStorage, tablesStorage, tablesUsers
+    newBase = tk.Tk()
+    tablesUsers = tk.StringVar()
+    tablesStorage = tk.StringVar()
+    failCause = tk.StringVar()
+    newBaseTableForUsers = ttk.Combobox(newBase, textvariable = tablesUsers)
+    newBaseTableForStorage = ttk.Combobox(newBase, textvariable = tablesStorage)
+    labelForUsersCombo = tk.Label(newBase, text = "Tabela użytkowników")
+    labelForStorageCombo = tk.Label(newBase, text = "Tabela magazynu")
+
+    saveBaseConfButton = tk.Button(newBase, text = "Zapisz", command = saveNewBase)
+    failLabel = tk.Label(newBase, textvariable = failCause)
+    tablesList = []
+    tablesInBase = qh.queryBase("SHOW TABLES FROM "+selectedBase+";")
+    if tablesInBase is None:
+        alert.popUpWarn(15)
+    for table in tablesInBase:
+        tablesList.append(table[0])
+    newBaseTableForUsers['values'] = tablesList
+    newBaseTableForStorage['values'] = tablesList
+    tablesUsers.set(tablesList[0])
+    tablesStorage.set(tablesList[1])
+    labelForUsersCombo.grid(column = 0, row = 0)
+    labelForStorageCombo.grid(column = 1, row = 0)
+    newBaseTableForUsers.grid(column = 0, row = 1)
+    newBaseTableForStorage.grid(column = 1, row = 1)
+    saveBaseConfButton.grid(column = 0, row = 2, columnspan = 2)
+    failLabel.grid(column = 0,row = 3, columnspan = 2)
+    newBase.mainloop()
+    return 
 def askForConf():
     def dbConfig():
         def saveConf():

@@ -19,7 +19,7 @@ def loginPanelInit(defConfig):
         if resultOfCompare == 5:
             failCause.set('Błąd logowania')
         elif resultOfCompare == 0:
-            setup.loggedUser(userActive.login)
+            setup.loggedUser(userActive)
             failCause.set('Logowanie udane')
             print("git")
             rootLogin.destroy()

@@ -1,4 +1,4 @@
-
+import sys
 import popUp as alert
 import classLib as cl
 import setup
@@ -7,6 +7,7 @@ from tkinter import ttk
 from tkinter import messagebox
 import queryHandle as qh
 import credHandle as ch
+import emergency as emerg
 import datetime
 
 def callAppCore():
@@ -231,16 +232,26 @@ def callLogedView():
 
     def changeBaseEvent(event):
         selectedBase = event.widget.get()
-        if selectedBase != confLive.Db:
+        root.destroy()        
+        if setup.checkDatabaseConf(selectedBase) == 1:
+            #alert.popUpWarn(13)
+            if emerg.askForNewBase(selectedBase) == 1:
+                alert.popUpWarn(14)
+                callLogedView()
+            else:
+                confLive.Db = selectedBase
+                setup.databaseChange(selectedBase)
+                selectedBaseQ = "use " + selectedBase
+                qh.queryBase(selectedBaseQ)
+                callLogedView()
+        elif selectedBase != confLive.Db:
             confLive.Db = selectedBase
             setup.databaseChange(selectedBase)
-            selectedBaseQ = "use " + selectedBase +";"
+            selectedBaseQ = "use " + selectedBase
             qh.queryBase(selectedBaseQ)
-
-            root.destroy()
-            callLogedView()
+        callLogedView()
     #def stuffSelect(event, label):
-
+    global root
     #load config---------------------------------------------
     confLive = setup.loadConfig(False)    
     confBase = setup.loadConfigForBase()
@@ -250,6 +261,7 @@ def callLogedView():
     root = tk.Tk()
     root.title("Storek")
     root.geometry("1280x340")
+    root.protocol("WM_DELETE_WINDOW", sys.exit)
     #root.bind("<Button-1>", hide_context_menu)
     #--------------------------------------------------------
 
@@ -265,7 +277,7 @@ def callLogedView():
     settingsFrame = ttk.Frame(mainNotebook)
     settingsFrame.grid(column = 0, row = 0)
     if not addRegister(confLive.logedUser):
-        pass
+        print("Not admin user")
     #--------------------------------------------------------
 
     #Info frame----------------------------------------------
