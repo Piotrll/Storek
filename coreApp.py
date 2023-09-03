@@ -227,6 +227,7 @@ def callLogedView():
         baseCombo.grid(column = 3, row = 1)
         buttonAdd = tk.Button(regFrame, text = "Dodaj", command = callAdding)
         buttonAdd.grid(column = 0, row = 3)
+        return True
 
         
 
