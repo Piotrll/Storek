@@ -95,6 +95,9 @@ def popUpWarn(case):
         case 16:
             warn = "Plik konfiguracyjny uszkodzony/niekompletny, uruchom program ponownie"
             warnButton = tk.Button(rootWarn, text = "OK", command = closeWarn)
+        case 17:
+            warn = "Utracono połączenie z serwerem"
+            warnButton = tk.Button(rootWarn, text = "OK", command = closeWarn)
         case _:
             warn = "That's it am out: Fatal Error"
     warnLabel = tk.Label(rootWarn, text = warn)
