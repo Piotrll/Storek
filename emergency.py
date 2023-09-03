@@ -1,11 +1,9 @@
 import tkinter as tk
-from tkinter import ttk
 import configparser as cp
 import os
 import sys
 import re
 import credHandle as ch
-import queryHandle as qh
 import popUp as alert
 
 def askForNewBase(selectedBase):
@@ -142,30 +140,31 @@ def askForConf():
         rootDbConf.mainloop()
         return
     def closedWindow():
+        rootAskForConf.destroy()
         sys.exit()
-    def connectionConf():
+    def saveGivenConf():
         global configPath
         #configPath = os.path.join(sys._MEIPASS, 'config.ini')
         configPath = 'config.ini'
         ip = ipEntered.get()
         port = portEntered.get()
-        masterLogin = masterLoginEntered.get()
-        masterPasswd = masterPasswdEntered.get()
         ipPatern = r"^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
         portPattern = r"^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$"
         ipRegex = re.match(ipPatern,ip)
         portRegex = re.match(portPattern,port)
         if not ipRegex or not portRegex:
             failLabel.set("Niepoprawny adres lub port")
-        elif masterLogin == "" or masterPasswd == "":
-            failLabel.set("Podaj login i hasło bazy MYSQL")
         else:
             configHandle = cp.ConfigParser()
             configHandle.add_section('conn')
+            configHandle.add_section('session')
             configHandle['conn']['ip'] = ip
             configHandle['conn']['port'] = port
-            configHandle['conn']['login'] = masterLogin
-            configHandle['conn']['passwd'] = masterPasswd
+            configHandle['conn']['login'] = "default"
+            passwd = '';
+            configHandle['conn']['passwd'] = str(passwd)
+            configHandle['conn']['db'] = ""
+            configHandle['session']['user'] = "default"
             if os.path.exists(configPath):
                 os.remove(configPath)
             with open(configPath, 'w') as configHandlerWrite:
@@ -179,8 +178,6 @@ def askForConf():
     rootAskForConf.protocol("WM_DELETE_WINDOW", closedWindow)
     ipEntered = tk.StringVar(value = "127.0.0.1")
     portEntered = tk.StringVar(value = "1234")
-    masterLoginEntered = tk.StringVar()
-    masterPasswdEntered = tk.StringVar()
     failText = tk.StringVar()
     mainLabel = tk.Label(rootAskForConf, text = "Ustawienia", font = "24")
     ipLabel = tk.Label(rootAskForConf, text = "Adres serwera")
@@ -191,22 +188,20 @@ def askForConf():
     portEntry = tk.Entry(rootAskForConf, textvariable = portEntered)
     masterLoginEntry = tk.Entry(rootAskForConf, textvariable = masterLoginEntered)
     masterPasswdEntry = tk.Entry(rootAskForConf, textvariable = masterPasswdEntered, show = '*')
+    ipEntry = tk.Entry(rootAskForConf, textvariable = ipEntered)
+    portEntry = tk.Entry(rootAskForConf, textvariable = portEntered)
     failLabel = tk.Label(rootAskForConf,textvariable = failText)
     exitButton = tk.Button(rootAskForConf, text = "Wyjście", command = sys.exit)
-    saveButton = tk.Button(rootAskForConf, text = "Zapisz", command = connectionConf)
+    saveButton = tk.Button(rootAskForConf, text = "Zapisz", command = saveGivenConf)
 
     mainLabel.grid(column = 0, row = 0, columnspan = 2)
     ipLabel.grid(column = 0, row = 1)
     portLabel.grid(column = 1, row = 1)
-    masterLoginLabel.grid(column = 0, row = 3)
-    masterPasswdLabel.grid(column = 1, row = 3)
     ipEntry.grid(column = 0, row = 2)
     portEntry.grid(column = 1, row = 2)
-    masterLoginEntry.grid(column = 0,row = 4)
-    masterPasswdEntry.grid(column = 1,row = 4)
-    failLabel.grid(column = 0, row = 6, columnspan = 2)
-    exitButton.grid(column = 0, row = 5)
-    saveButton.grid(column = 1, row = 5)
+    failLabel.grid(column = 0, row = 4, columnspan = 2)
+    exitButton.grid(column = 0, row = 3)
+    saveButton.grid(column = 1, row = 3)
 
     rootAskForConf.mainloop()
     return True
