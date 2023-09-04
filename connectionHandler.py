@@ -54,7 +54,9 @@ def estConnection(creds):
 def pingCheck(howMany, who):
     if platform.system().lower() == "windows":
         param = "-n"
+        pingGoogle = ["ping", param , howMany, who]
     else:
         param = "-c"
-    pingGoogle = ["ping", param, howMany, who]
+        param2 = "-q"
+        pingGoogle = ["ping", param , howMany, param2, who]
     return subprocess.call(pingGoogle)

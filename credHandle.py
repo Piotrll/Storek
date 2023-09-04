@@ -33,7 +33,12 @@ def hashPassword(passLoad):
 def addUser(newUser):
 
     newUser.passwd = hashPassword(newUser.passwd)
-    queryAddUser = " INSERT INTO "+newUser.db+"."+confBase.Users+" () VALUES (%s, %s, %s);"
+    fieldsNames = qh.queryBase("show fields from "+newUser.db+"."+confBase.Users)
+    toQuery = []
+    for name in fieldsNames:
+        toQuery.append(name[0])
+    queryAddUser = " INSERT INTO "+newUser.db+"."+confBase.Users+" ("+toQuery[1]+","+toQuery[2]+","+toQuery[3]+") VALUES (%s, %s, %s);"
+
     query_params = (newUser.login, newUser.passwd, newUser.perms)
     res = qh.parameteredQuery(queryAddUser,query_params)
     

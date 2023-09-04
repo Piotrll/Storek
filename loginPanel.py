@@ -13,12 +13,10 @@ def loginPanelInit(defConfig):
         sys.exit()
     def loginMe():
         global resultOfCompare
-
-
         userActive = cl.UserLoggin(loginEntered.get(),passwordEntered.get())
         userActive.db = baseToGo.get()
         tables = setup.checkConfig(userActive.db)
-        permCheckList = qh.queryBase('select * from '+tables['usertable']+';')
+        permCheckList = qh.queryBase('select * from '+userActive.db+'.'+tables['usertable']+';')
         for perm in permCheckList:
             if perm[1] == userActive.login:
                 userActive.perms = perm[3]
@@ -59,7 +57,7 @@ def loginPanelInit(defConfig):
     for base in possibleBasesVar:
         comboBaseValues.append(base)
     possibleBases['values'] = comboBaseValues
-    baseToGo.set(defConfig.Db)
+    baseToGo.set(comboBaseValues[0][0])
     possibleBases.grid(column = 0, row = 4, columnspan = 3, pady = 5)
 
     mainLabel.grid(column = 0, row = 0, columnspan = 3)
