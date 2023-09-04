@@ -1,8 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter.messagebox import askyesno
-import os
-import time
+import threadHandle as th
 #import wmi
 
 def tryAgain():
@@ -35,6 +34,7 @@ def popUpError(info):
 def popUpWarn(case):
     def closeWarn():
         rootWarn.destroy()
+        th.threadManager(True)
         exit()
     def closeNoExit():
         rootWarn.destroy()
@@ -97,6 +97,9 @@ def popUpWarn(case):
             warnButton = tk.Button(rootWarn, text = "OK", command = closeWarn)
         case 17:
             warn = "Utracono połączenie z serwerem"
+            warnButton = tk.Button(rootWarn, text = "OK", command = closeWarn)
+        case 18:
+            warn = "Nastąpiła zmiana uprawnień, nastąpi wyłączenie"
             warnButton = tk.Button(rootWarn, text = "OK", command = closeWarn)
         case _:
             warn = "That's it am out: Fatal Error"
