@@ -13,6 +13,8 @@ def askForNewBase(selectedBase):
     configPath ='config.ini'
     def saveNewBase():
         try:
+            global flag
+            flag = 0
             users = tablesUsers.get()
             storage = tablesStorage.get()
             
@@ -25,6 +27,7 @@ def askForNewBase(selectedBase):
                 configHandle.write(configHandlerWrite)
         except cp.NoOptionError:
             alert.popUpWarn(13)
+            flag = 1
         finally:
             newBase.destroy()
             return
@@ -57,7 +60,7 @@ def askForNewBase(selectedBase):
     saveBaseConfButton.grid(column = 0, row = 2, columnspan = 2)
     failLabel.grid(column = 0,row = 3, columnspan = 2)
     newBase.mainloop()
-    return 
+    return flag
 def askForConf():
     def dbConfig():
         def saveConf():

@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter.messagebox import askyesno
+import sys
 import threadHandle as th
 #import wmi
 
@@ -19,9 +20,12 @@ def popUpError(info):
         
     def closeApp():
         rootErr.destroy()
-        exit()
+        #th.threadManager(True)
+        sys.exit()
     rootErr = tk.Tk()
     rootErr.title("Storek")
+
+    rootErr.protocol("WM_DELETE_WINDOW", closeApp)
     errorButton = tk.Button(rootErr, text = "Wyjście", command = closeApp)
     proceedButton = tk.Button(rootErr, text = "Wróć" ,command = closeErr)
     warnLabel = tk.Label(rootErr, text = info, wraplength=300)
@@ -35,13 +39,15 @@ def popUpWarn(case):
     def closeWarn():
         rootWarn.destroy()
         th.threadManager(True)
-        exit()
+        sys.exit()
     def closeNoExit():
         rootWarn.destroy()
         return
     rootWarn = tk.Tk()
     rootWarn.geometry("400x100")
     rootWarn.title("Storek")
+
+    rootWarn.protocol("WM_DELETE_WINDOW", closeWarn)
     warn = ''
     warnButton = tk.Button(rootWarn, text = "OK")
     match case:
@@ -101,6 +107,12 @@ def popUpWarn(case):
         case 18:
             warn = "Nastąpiła zmiana uprawnień, nastąpi wyłączenie"
             warnButton = tk.Button(rootWarn, text = "OK", command = closeWarn)
+        case 19:
+            warn = "Brak uprawnień do wybranej bazy"
+            warnButton = tk.Button(rootWarn, text = "OK", command = closeNoExit)
+        case 20:
+            warn = "Niepoprawnie skonfigurowana baza danych"
+            warnButton = tk.Button(rootWarn, text = "OK", command = closeNoExit)
         case _:
             warn = "That's it am out: Fatal Error"
     warnLabel = tk.Label(rootWarn, text = warn)

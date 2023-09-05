@@ -17,7 +17,8 @@ def callAppCore():
     return 0
 def callLogedView():
     def closeApp():
-        thh.threadManager(True)
+        #thh.threadManager(True)
+        sys.exit()
     def showSelectInfo(e):
         try:
             itemInfo.destroy()
@@ -227,6 +228,7 @@ def callLogedView():
                 alert.popUpWarn(11)
             else:
                 resultAddingUserVar.set("Użytkownik dodany")
+                thh.threadManager(3)
         if not ph.permCheck(confLive.permissionCode,7):
             return False
         regFrame = tk.LabelFrame(settingsFrame, text = "Dodaj użytkownika")
@@ -266,28 +268,70 @@ def callLogedView():
         buttonAdd = tk.Button(regFrame, text = "Dodaj", command = callAdding)
         buttonAdd.grid(column = 0, row = 5)
         return True
-
+    
+    def baseChangingPanel():
+        global actualBaseVar
+        possibleBases = qh.queryBase("SELECT DISTINCT TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'sys','performance_schema') ORDER BY TABLE_SCHEMA;")
+        if possibleBases == 1:
+            return False
+        comboBaseValues = []
+        for base in possibleBases:
+            comboBaseValues.append(base[0])
+        actualBaseLab = tk.Label(infoFrameInStorage,text = "Aktualna baza: "+confLive.Db+".")
+        actualBaseLab.grid(column = 0, row = 0)
+        actualBaseVar = tk.StringVar(value = confLive.Db)
+        actualBase = ttk.Combobox(infoFrameInStorage, textvariable = actualBaseVar)
+        actualBase['values'] = comboBaseValues
+        #actualBaseVar.set(confLive.Db)
+        actualBase.grid(column = 1, row = 0)
+        actualBase.bind("<<ComboboxSelected>>", lambda event: changeBaseEvent(event))
+        return True
         
 
     def changeBaseEvent(event):
+        thh.threadManager(2)
         selectedBase = event.widget.get()
-        root.destroy()        
+        root.destroy()    
+        newBaseConf = setup.loadConfigForBase()
+        if newBaseConf == False:
+            resNewBase = emerg.askForNewBase(selectedBase)
+            if resNewBase == 1:
+                return
+        selectedBaseUsers = qh.queryBase("select * from "+selectedBase+"."+newBaseConf.Users+";") 
+        for row in selectedBaseUsers:
+            if confLive.logedUser == row[1]:
+                try:
+                    code = row[3]
+                except IndexError:
+                    alert.popUpWarn(20) # to be handled
+                    thh.threadManager()
+                    callLogedView()
+                    
+        if code == 0:
+            alert.popUpWarn(19)
+            thh.threadManager()
+            callLogedView()
+            return
         if setup.checkDatabaseConf(selectedBase) == 1:
             #alert.popUpWarn(13)
             if emerg.askForNewBase(selectedBase) == 1:
                 alert.popUpWarn(14)
+                thh.threadManager()
                 callLogedView()
             else:
+                
                 confLive.Db = selectedBase
                 setup.databaseChange(selectedBase)
                 selectedBaseQ = "use " + selectedBase
                 qh.queryBase(selectedBaseQ)
+                thh.threadManager()
                 callLogedView()
         elif selectedBase != confLive.Db:
             confLive.Db = selectedBase
             setup.databaseChange(selectedBase)
             selectedBaseQ = "use " + selectedBase
             qh.queryBase(selectedBaseQ)
+        thh.threadManager()
         callLogedView()
     #def stuffSelect(event, label):
     global root
@@ -317,8 +361,7 @@ def callLogedView():
     #Settings Frame------------------------------------------
     settingsFrame = ttk.Frame(mainNotebook)
     settingsFrame.grid(column = 0, row = 0)
-    if not addRegister(confLive):
-        print("Not admin user - disabling add user option")
+    
     
     #--------------------------------------------------------
 
@@ -345,33 +388,13 @@ def callLogedView():
     infoFrameInStorage.grid(row=1, column=1, sticky="nsew")
     #--------------------------------------------------------
 
-    # Initialize Data from config base ----------------------
+    # Modular Panels ----------------------
     if not initializeBaseData():
         print("No permission to view storage")
-    #---------------------------------------------------------
-
-    #Right panel Info print ----------------------------------
-    #Done by function showSelectInfo
-    #---------------------------------------------------------
-
-    #Right Panel base changer --------------------------------
-    actualBaseLab = tk.Label(infoFrameInStorage,text = "Aktualna baza: ")
-    actualBaseLab.grid(column = 0, row = 0)
-    actualBaseVar = tk.StringVar()
-    
-    actualBase = ttk.Combobox(infoFrameInStorage, textvariable = actualBaseVar)
-    possibleBases = qh.queryBase("SELECT DISTINCT TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'sys','performance_schema') ORDER BY TABLE_SCHEMA;")
-    comboBaseValues = []
-    for base in possibleBases:
-        comboBaseValues.append(base)
-    actualBase['values'] = comboBaseValues
-    actualBaseVar.set(confLive.Db)
-    actualBase.grid(column = 1, row = 0)
-    actualBase.bind("<<ComboboxSelected>>", lambda event: changeBaseEvent(event))
+    if not addRegister(confLive):
+        print("Not admin user - disabling add user option")
+    if not baseChangingPanel():
+        print('No additional bases, panel hidden')
     #----------------------------------------------------------
-
-    #Context Menu ---------------------------------------------
-    
-    #-----------------------------------------------------------
     #root.bind("<Configure>", fillWindow)
     root.mainloop()

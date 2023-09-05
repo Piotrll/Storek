@@ -6,6 +6,7 @@ import connectionHandler as ch
 import classLib as cl
 import emergency as emerg
 import loginPanel as lp
+import threadHandle as thh
 def checkConfig(db):
     try:
         configHandle = cp.ConfigParser()
@@ -39,7 +40,6 @@ def loggedUser(user):
         configHandle.write(configHandlerWrite)
 
 def databaseChange(choosenDb):
-
     configHandle = cp.ConfigParser()
     configHandle.read(configPath)
     if 'conn' not in configHandle:

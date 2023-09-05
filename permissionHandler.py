@@ -20,12 +20,15 @@ def permThreads(confLive, *args):
     global stop
     if args and args[0] == True:
         stop = 0
-        permC = th.Thread(target = cyclePermCheck, args = (confLive,))
+        permC = th.Thread(daemon = True,target = cyclePermCheck, args = (confLive,))
         permC.start()
         return
     elif args and args[0] == False:
         stop = 1
         return
+    elif args and args[0] == 2:
+        stop = 0
+        return #unpause
 
 def permCheck(code,panel):
     posInCode = panel

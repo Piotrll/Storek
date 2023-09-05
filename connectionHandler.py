@@ -29,12 +29,15 @@ def connThreads(confLive, *args):
     global stop
     if args and args[0] == True:
         stop = 0
-        connection = th.Thread(target = maintainConnection, args = (confLive.Ip,))
+        connection = th.Thread(daemon = True,target = maintainConnection, args = (confLive.Ip,))
         connection.start()
         return
     elif args and args[0] == False:
-        stop = 1
+        stop = 1 
         return
+    elif args and args[0] == 2:
+        stop = 0
+        return #unpause
     
             
 def estConnection(creds):
