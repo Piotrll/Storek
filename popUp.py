@@ -3,13 +3,15 @@ import tkinter.ttk as ttk
 from tkinter.messagebox import askyesno
 import sys
 import threadHandle as th
+import queryHandle as qh
+import time as t
 #import wmi
 
-def tryAgain():
+def tryAgain(msg):
     rootWarn = tk.Tk()
     rootWarn.geometry("400x100")
     rootWarn.title("Storek")
-    ask = askyesno(title = "Ponowić próbe ?", message = "Czy ponowić próbe?")
+    ask = askyesno(title = "Storek", message = msg)
     if ask:
         return True
     else:
@@ -20,7 +22,7 @@ def popUpError(info):
         
     def closeApp():
         rootErr.destroy()
-        #th.threadManager(True)
+        th.stopThreads()
         sys.exit()
     rootErr = tk.Tk()
     rootErr.title("Storek")
@@ -38,7 +40,7 @@ def popUpError(info):
 def popUpWarn(case):
     def closeWarn():
         rootWarn.destroy()
-        th.threadManager(True)
+        th.stopThreads()
         sys.exit()
     def closeNoExit():
         rootWarn.destroy()
@@ -50,6 +52,7 @@ def popUpWarn(case):
     rootWarn.protocol("WM_DELETE_WINDOW", closeWarn)
     warn = ''
     warnButton = tk.Button(rootWarn, text = "OK")
+    
     match case:
         case 1:
             warn = "Program jest już uruchomiony"
@@ -103,7 +106,7 @@ def popUpWarn(case):
             warnButton = tk.Button(rootWarn, text = "OK", command = closeWarn)
         case 17:
             warn = "Utracono połączenie z serwerem"
-            warnButton = tk.Button(rootWarn, text = "OK", command = closeWarn)
+            warnButton = tk.Button(rootWarn, text = "OK", command = closeNoExit)
         case 18:
             warn = "Nastąpiła zmiana uprawnień, nastąpi wyłączenie"
             warnButton = tk.Button(rootWarn, text = "OK", command = closeWarn)
@@ -113,8 +116,11 @@ def popUpWarn(case):
         case 20:
             warn = "Niepoprawnie skonfigurowana baza danych"
             warnButton = tk.Button(rootWarn, text = "OK", command = closeNoExit)
+        case 21:
+            warn = "Błąd połączenia 001"
+            warnButton = tk.Button(rootWarn, text = "OK", command = closeWarn)
         case _:
-            warn = "That's it am out: Fatal Error"
+            warn = "That's it, I'am out: Fatal Error"
     warnLabel = tk.Label(rootWarn, text = warn)
     
 

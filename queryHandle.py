@@ -43,7 +43,7 @@ def queryBase(query, *args):
         queryListConn.commit()
         return dataCreds
     except mc.Error as e:
-        alert.popUpError(e)
+        alert.popUpError("Wystąpił błąd zapytania bazy danych, treść :"+str(e))
         return False
 def queryServer(query, *args):
     #if not ch.pingCheck():

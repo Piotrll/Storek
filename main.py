@@ -19,7 +19,9 @@ def init():
         if errorCode != 0:
             alert.popUpWarn(errorCode)
             sys.exit()
-        thh.threadManager()
+        if not thh.setupThreads():
+            alert.popUpWarn("Błąd 300 - konfiguracja")
+        thh.   threadManager()
         if core.callLogedView() == False:
             alert.popUpWarn(13)
 
@@ -40,11 +42,11 @@ def checkForOtherInstances():
         return True
     else:
         return False
-try:  
-    init()
-except Exception as e:
-    alert.popUpError(e)
-    sys.exit()
+#try:  
+init()
+#except Exception as e:
+ #   alert.popUpError(e)
+  #  sys.exit()
 """
 def checkForOtherInstances():
     try:

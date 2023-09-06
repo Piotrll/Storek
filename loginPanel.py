@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import sys
-import time
+import popUp as alert
 import credHandle as ch
 import classLib as cl
 import coreApp as ca
@@ -61,6 +61,8 @@ def loginPanelInit(defConfig):
 
     possibleBases = ttk.Combobox(inputFrame, textvariable = baseToGo)
     possibleBasesVar = qh.queryBase("SELECT DISTINCT TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'sys','performance_schema') ORDER BY TABLE_SCHEMA;")
+    if possibleBasesVar == False:
+        alert.popUpWarn(21)
     comboBaseValues = []
     for base in possibleBasesVar:
         comboBaseValues.append(base)

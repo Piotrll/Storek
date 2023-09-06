@@ -2,33 +2,32 @@ import queryHandle as qh
 import threadHandle as thh
 import threading as th
 import popUp as alert
+import qConf as conf
 import setup, time
 
 def permThreads(confLive, *args):
     def cyclePermCheck(ip,*args):
+        
         tables = setup.loadConfigForBase()
+        stop = 0
         while stop != 1:
             time.sleep(2)
             print("Checking perms...")
             users = qh.queryBase("select * from "+confLive.Db+"."+tables.Users+";")
-            for row in users:
-                if confLive.logedUser == row[1]:
-                    if confLive.permissionCode != row[3]:
-                        alert.popUpWarn(18)
-                        break
-        
-    global stop
-    if args and args[0] == True:
-        stop = 0
-        permC = th.Thread(daemon = True,target = cyclePermCheck, args = (confLive,))
-        permC.start()
-        return
-    elif args and args[0] == False:
-        stop = 1
-        return
-    elif args and args[0] == 2:
-        stop = 0
-        return #unpause
+            if not users:
+                print("Błąd zapytania Bazy")
+                break
+            else:
+                for row in users:
+                    if confLive.logedUser == row[1]:
+                        if confLive.permissionCode != row[3]:
+                            alert.popUpWarn(18)
+                            break
+            stop = conf.configGet("th","perm")
+    
+    permC = th.Thread(daemon = True,target = cyclePermCheck, args = (confLive,))
+    permC.start()
+    return
 
 def permCheck(code,panel):
     posInCode = panel

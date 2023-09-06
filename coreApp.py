@@ -17,7 +17,7 @@ def callAppCore():
     return 0
 def callLogedView():
     def closeApp():
-        #thh.threadManager(True)
+        thh.stopThreads()
         sys.exit()
     def showSelectInfo(e):
         try:
@@ -228,7 +228,7 @@ def callLogedView():
                 alert.popUpWarn(11)
             else:
                 resultAddingUserVar.set("Użytkownik dodany")
-                thh.threadManager(3)
+                thh.threadManager()
         if not ph.permCheck(confLive.permissionCode,7):
             return False
         regFrame = tk.LabelFrame(settingsFrame, text = "Dodaj użytkownika")
@@ -289,7 +289,7 @@ def callLogedView():
         
 
     def changeBaseEvent(event):
-        thh.threadManager(2)
+        thh.stopThreads()
         selectedBase = event.widget.get()
         root.destroy()    
         newBaseConf = setup.loadConfigForBase()
