@@ -8,9 +8,13 @@ import coreApp as ca
 import setup
 import queryHandle as qh
 def loginPanelInit(defConfig):
+    global flag
     def closedWindow():
         rootLogin.destroy()
         sys.exit()
+    """def flushConf():
+        flag = 2
+        rootLogin.destroy()"""
     def loginMe():
         global resultOfCompare
         userActive = cl.UserLoggin(loginEntered.get(),passwordEntered.get())
@@ -33,7 +37,8 @@ def loginPanelInit(defConfig):
             rootLogin.destroy()
             return 0
         
-        
+    
+    flag = 0
     rootLogin = tk.Tk()
     rootLogin.title("Logowanie Storek")
     rootLogin.protocol("WM_DELETE_WINDOW", closedWindow)
@@ -46,10 +51,13 @@ def loginPanelInit(defConfig):
     baseToGo = tk.StringVar()
     loginEntryLabel = tk.Label(inputFrame, text = "Login")
     passwordEntryLabel = tk.Label(inputFrame, text = "Hasło")
+    toGobaseLabel = tk.Label(inputFrame, text = "Wybierz baze")
+    #flushConfigLabel = tk.Label(inputFrame, text = "Reset konfiguracji")
     loginEntry = tk.Entry(inputFrame, textvariable = loginEntered)
     passwordEntry = tk.Entry(inputFrame, textvariable = passwordEntered, show = '*')
     failLabel = tk.Label(inputFrame,textvariable = failCause)
     loginButton = tk.Button(inputFrame, text = "Zaloguj", command = loginMe)
+    #flushConfig = tk.Button(inputFrame, text = "Reset", command = flushConf)
 
     possibleBases = ttk.Combobox(inputFrame, textvariable = baseToGo)
     possibleBasesVar = qh.queryBase("SELECT DISTINCT TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA NOT IN ('information_schema', 'mysql', 'sys','performance_schema') ORDER BY TABLE_SCHEMA;")
@@ -58,7 +66,7 @@ def loginPanelInit(defConfig):
         comboBaseValues.append(base)
     possibleBases['values'] = comboBaseValues
     baseToGo.set(comboBaseValues[0][0])
-    possibleBases.grid(column = 0, row = 4, columnspan = 3, pady = 5)
+    
 
     mainLabel.grid(column = 0, row = 0, columnspan = 3)
     inputFrame.grid(column = 0, row = 1, columnspan = 3, padx = 5)
@@ -68,7 +76,11 @@ def loginPanelInit(defConfig):
     passwordEntry.grid(column = 1, row = 1, padx = 5)
     
     failLabel.grid(column = 0, row = 2, columnspan = 3)
-    loginButton.grid(column = 0, row = 3, columnspan = 3, pady = 5)
+    loginButton.grid(column = 0, row = 3,columnspan = 3, pady = 5)
+    #flushConfigLabel.grid(column = 1, row = 4, pady = 5)
+    toGobaseLabel.grid(column = 0, row = 4, pady = 5)
+    possibleBases.grid(column = 0, row = 5, pady = 5)
+    #flushConfig.grid(column = 1, row = 5)
     rootLogin.mainloop()
-    return 0
+    return flag
     

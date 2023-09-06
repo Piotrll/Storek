@@ -139,8 +139,12 @@ def callSettings():
                 emerg.askForConf()
                 callSettings()
             loginResult = lp.loginPanelInit(confLive)
-            if loginResult != 0:
+            if loginResult == 1:
                 sys.exit()
+            elif loginResult == 2:
+                if os.path.exists(configPath):
+                    os.remove(configPath)
+                os.execl(sys.executable, sys.executable, * sys.argv)
             if not ch.connectionInit(confLive):
                 alert.popUpWarn(4)
                 isConfig = 3

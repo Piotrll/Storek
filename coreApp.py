@@ -42,18 +42,18 @@ def callLogedView():
             dataInfoNames.append(columnForInfo[0])
         for labelName in dataInfoNames:
             varsForLabels.append(tk.StringVar())
-            shownLabels.append(tk.Label(itemInfo, text = ""))
+            shownLabels.append(tk.Label(itemInfo, text = "", font = "bold"))
             shownLabels[i].config(text = labelName)
-            shownLabels[i].grid(column = 0, row = i+1)
+            shownLabels[i].grid(column = 1, row = i+1)
             i += 1
         i = 0
         for valueForInfo in storageStatusInfoLocal:
             dataInfoNames = valueForInfo
         for value in dataInfoNames:
             itemValueVars.append(tk.StringVar())
-            actualValueLabels.append(tk.Label(itemInfo, text = ""))
+            actualValueLabels.append(tk.Label(itemInfo, text = "", wraplength = 100))
             actualValueLabels[i].config(text = value)
-            actualValueLabels[i].grid(column = 1, row = i+1)
+            actualValueLabels[i].grid(column = 2, row = i+1)
             i += 1
         itemInfo.grid(row=1, column=0, sticky="nsew")
         root.update_idletasks()
@@ -206,9 +206,9 @@ def callLogedView():
         for stuff in storageStatus:
             listOfStorage.insert('',tk.END, values = stuff)
 
-        listOfStorage.grid(column = 0, row = 0, sticky = "ns")
-        scrollbar = ttk.Scrollbar(stuffFrame, orient="vertical", command=listOfStorage.yview)
-        scrollbar.grid(row=0, column=1, sticky="ns")
+        listOfStorage.pack(side = "top", fill = "both", expand = True )
+        scrollbar = ttk.Scrollbar(listOfStorage, orient="vertical", command=listOfStorage.yview)
+        scrollbar.pack(side = "right", fill = "y")
         context = tk.Menu(root, tearoff=0)
         context.add_command(label="Dodaj", command = addItem)
         context.add_command(label="Usuń", command = deleteItem)
@@ -278,12 +278,12 @@ def callLogedView():
         for base in possibleBases:
             comboBaseValues.append(base[0])
         actualBaseLab = tk.Label(infoFrameInStorage,text = "Aktualna baza: "+confLive.Db+".")
-        actualBaseLab.grid(column = 0, row = 0)
+        actualBaseLab.grid(column = 0, row = 0, pady = 5)
         actualBaseVar = tk.StringVar(value = confLive.Db)
         actualBase = ttk.Combobox(infoFrameInStorage, textvariable = actualBaseVar)
         actualBase['values'] = comboBaseValues
         #actualBaseVar.set(confLive.Db)
-        actualBase.grid(column = 1, row = 0)
+        actualBase.grid(column = 1, row = 0, pady = 5)
         actualBase.bind("<<ComboboxSelected>>", lambda event: changeBaseEvent(event))
         return True
         
@@ -380,12 +380,12 @@ def callLogedView():
 
     #Stuff Frame---------------------------------------------
     stuffFrame = tk.Frame(baseFrame)
-    stuffFrame.grid(column = 0, row = 1, sticky="nsew")
+    stuffFrame.pack(side = "left", fill = "both", expand = True)
     #--------------------------------------------------------
 
     #Info Frame on the right --------------------------------
     infoFrameInStorage = ttk.Frame(baseFrame)
-    infoFrameInStorage.grid(row=1, column=1, sticky="nsew")
+    infoFrameInStorage.pack(side = "right", fill = "both", expand = False)
     #--------------------------------------------------------
 
     # Modular Panels ----------------------

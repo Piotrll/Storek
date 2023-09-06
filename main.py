@@ -40,9 +40,11 @@ def checkForOtherInstances():
         return True
     else:
         return False
-    
-init()
-
+try:  
+    init()
+except Exception as e:
+    alert.popUpError(e)
+    sys.exit()
 """
 def checkForOtherInstances():
     try:
